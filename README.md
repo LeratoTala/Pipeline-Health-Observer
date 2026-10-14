@@ -1,7 +1,5 @@
 # Pipeline-Health-Observer
 
-# Pipeline Health Observer
-
 ## Overview
 
 Pipeline Health Observer monitors a data pipeline to detect data quality issues and track pipeline health.
