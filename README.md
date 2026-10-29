@@ -44,7 +44,9 @@ Pipeline-Health-Observer/
 └── README.md
 ```
 
-## Setup
+## Setup & Running the Project
+
+Follow these steps in order from the project root directory.
 
 ### 1. Install Python
 
@@ -59,17 +61,27 @@ git clone <your-repository-url>
 cd Pipeline-Health-Observer
 ```
 
-### 3. Create and activate a virtual environment
+### 3. Create a virtual environment
 
 **macOS / Linux:**
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate
 ```
 
 **Windows (PowerShell):**
 ```powershell
 python -m venv .venv
+```
+
+### 4. Activate the virtual environment
+
+**macOS / Linux:**
+```bash
+source .venv/bin/activate
+```
+
+**Windows (PowerShell):**
+```powershell
 .venv\Scripts\Activate.ps1
 ```
 
@@ -78,15 +90,15 @@ python -m venv .venv
 > Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 > ```
 
-### 4. Install dependencies
+### 5. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Running the Project
+---
 
-### Run the pipeline
+### 6. Run the pipeline
 
 Loads `data/students.csv`, runs all health checks, and saves results to `pipeline_health.db`.
 
@@ -106,30 +118,30 @@ Running Pipeline Health Observer...
 All checks passed.
 ```
 
-The pipeline exits with code `1` if any check has a `FAIL` status, making it safe to use in CI.
+> The pipeline exits with code `1` if any check has a `FAIL` status, making it safe to use in CI.
 
-### Launch the dashboard
+### 7. Launch the dashboard
 
-Starts the Streamlit dashboard at `http://localhost:8501`.
-
-> Run the pipeline at least once first so there is data to display.
+> Run the pipeline (step 6) at least once before launching the dashboard, so there is data to display.
 
 ```bash
 streamlit run dashboard/app.py
 ```
+
+Then open [http://localhost:8501](http://localhost:8501) in your browser.
 
 The dashboard shows:
 - Summary metrics (total runs, OK / WARN / FAIL counts)
 - A full colour-coded table of all check results
 - A breakdown of the most recent run
 
-### Run the tests
+### 8. Run the tests
 
 ```bash
 pytest tests/ -v
 ```
 
-Expected output: 13 tests passing across `test_checks.py` (9 tests) and `test_pipeline.py` (4 tests).
+Expected output: 13 tests passing — 9 in `test_checks.py` and 4 in `test_pipeline.py`.
 
 ## How It Works
 
