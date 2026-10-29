@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 DB_PATH = "pipeline_health.db"
@@ -28,7 +28,7 @@ def init_db(db_path: str = DB_PATH) -> None:
 def insert_result(check_name: str, status: str, details: str,
                   db_path: str = DB_PATH) -> None:
     """Persist a single health-check result."""
-    run_at = datetime.utcnow().isoformat(timespec="seconds")
+    run_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
     with get_connection(db_path) as conn:
         conn.execute(
             "INSERT INTO health_checks (check_name, status, details, run_at) "

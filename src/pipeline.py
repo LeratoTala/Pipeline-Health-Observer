@@ -1,14 +1,14 @@
 import sys
+import config
 from src.observer import run_checks
 
 
-DATA_PATH = "data/students.csv"
-
-
 def main() -> None:
+    data_path = config.PIPELINE["data_path"]
+
     print("Running Pipeline Health Observer...\n")
 
-    results = run_checks(DATA_PATH)
+    results = run_checks(data_path)
 
     failed = False
     for result in results:

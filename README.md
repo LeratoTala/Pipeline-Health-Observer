@@ -1,16 +1,21 @@
+WTC-MMBMJF8B
+
 # Pipeline-Health-Observer
 
 ## Overview
 
 Pipeline Health Observer monitors a data pipeline to detect data quality issues and track pipeline health.
 It loads a CSV dataset, runs a suite of health checks, stores the results in SQLite, and displays them
-in an interactive Streamlit dashboard.
-
 ## Features
 
 - Detect schema drift — flags missing or unexpected columns.
 - Monitor data freshness — warns when data hasn't been updated recently.
 - Detect row-count anomalies — flags datasets that are too small or too large.
+- Detect high null rates — warns when any column exceeds the configured missing-value threshold.
+- Detect duplicate rows — flags duplicate values in the ID column.
+- Store health-check results in SQLite for historical tracking.
+- Display monitoring results in a Streamlit dashboard with colour-coded statuses.
+- All thresholds configurable via `config.py` — no source code changes needed.
 - Store health-check results in SQLite for historical tracking.
 - Display monitoring results in a Streamlit dashboard with colour-coded statuses.
 
@@ -40,6 +45,7 @@ Pipeline-Health-Observer/
 │   └── test_pipeline.py      # Integration tests for pipeline and DB
 ├── docs/
 │   └── architecture.md       # Architecture overview and component diagram
+├── config.py                 # All configurable thresholds and settings
 ├── requirements.txt
 └── README.md
 ```
@@ -57,7 +63,7 @@ Download and install Python 3.11 or later from [python.org/downloads](https://ww
 ### 2. Clone the repository
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/LeratoTala/Pipeline-Health-Observer
 cd Pipeline-Health-Observer
 ```
 
@@ -112,8 +118,10 @@ Expected output:
 Running Pipeline Health Observer...
 
 ✅  [OK]   schema_drift: Schema matches expected columns.
-✅  [OK]   freshness: Data is fresh. Latest record: 2026-10-27.
+✅  [OK]   freshness: Data is fresh. Latest record: 2026-10-29.
 ✅  [OK]   row_count_anomaly: Row count 20 is within expected range.
+✅  [OK]   null_rate: All checked columns are within the 5% null-rate threshold.
+✅  [OK]   duplicate_rows: No duplicate values found in 'student_id'.
 
 All checks passed.
 ```
@@ -141,18 +149,27 @@ The dashboard shows:
 pytest tests/ -v
 ```
 
-Expected output: 13 tests passing — 9 in `test_checks.py` and 4 in `test_pipeline.py`.
+Expected output: 19 tests passing — 15 in `test_checks.py` and 4 in `test_pipeline.py`.
 
 ## How It Works
 
-1. `pipeline.py` calls `observer.run_checks()` with the path to the CSV.
+1. `pipeline.py` reads `config.py` for the data path, then calls `observer.run_checks()`.
 2. The observer loads the CSV into a pandas DataFrame.
 3. Each check in `checks.py` returns a dict with `check`, `status` (`OK` / `WARN` / `FAIL`), and `details`.
 4. Results are written to the `health_checks` SQLite table via `database.py`.
 5. The Streamlit dashboard reads from the same SQLite file and renders the results.
 
+## Configuration
+
+All thresholds live in `config.py` at the project root. Edit it to tune any check without touching source code:
+
+```python
+FRESHNESS    = {"date_column": "last_updated", "max_age_days": 7}
+ROW_COUNT    = {"expected_min": 10, "expected_max": 1000}
+NULL_RATE    = {"columns": [...], "max_null_rate": 0.05}   # 5 %
+DUPLICATES   = {"id_column": "student_id"}
+```
+
 See [docs/architecture.md](docs/architecture.md) for a full component diagram.
 
-## Project Status
 
-Complete. All source modules, tests, dashboard, and documentation are implemented.
